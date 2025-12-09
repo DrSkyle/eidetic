@@ -3,8 +3,6 @@
 
 Eidetic is an experimental **Intelligent Filesystem** built in Rust. It runs in userspace (FUSE) and enhances your local storage with superpowers like Time Travel, Content-Aware Organization, and Transparent Encryption.
 
-![Eidetic Demo](https://via.placeholder.com/800x400?text=Imagine+Cool+Demo+GIF+Here)
-
 ## 📂 Project Structure
 This is a monorepo containing:
 - **`eidetic/`**: The core Rust FUSE filesystem.
