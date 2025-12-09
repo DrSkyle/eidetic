@@ -3,15 +3,16 @@
 
 Eidetic enhances your local storage with **Time Travel**, **Privacy Vaults**, and **Magic Views**. It runs quietly in the background, giving your files superpowers.
 
+![Eidetic Usage](https://via.placeholder.com/800x400?text=Eidetic+CLI+Demo)
 
 ## ✨ Features
 - **⏳ Time Travel**: Instant snapshots of every change. Undo anything.
 - **🛡️ The Vault**: Drop files in `/vault` to transparently encrypt them on disk.
 - **📊 Live Stats**: Read `stats.md` in your root for real-time filesystem usage.
+- **🤖 Deep Context**: `cat .context` to get a perfect, git-aware markdown bundle of your **entire codebase** for AI prompting.
 - **🪄 Magic Views**: 
     - Auto-convert images (Save `.png`, read `.jpg`).
     - Web Links (`.url` files become the actual webpage).
-    - Code Context Bundles for AI.
 
 ## 📦 Installation
 
@@ -25,21 +26,26 @@ cargo install --path ./eidetic
 
 ## 🚀 Usage
 
-Once installed, you can use `eidetic` from any terminal, anywhere.
-
-### 1. Start the Magic
-You need two folders: one where your actual data lives ("Source") and one where you want to see the magic ("Mount").
+### 1. Start Daemon
+Start Eidetic in the background using `start`. It will keep running even if you close the terminal.
 
 ```bash
-# Syntax: eidetic mount --source <DATA_PATH> --mountpoint <VIEW_PATH>
+# Syntax: eidetic start --source <DATA_PATH> --mountpoint <VIEW_PATH>
 
-eidetic mount --source ~/Documents/MyData --mountpoint ~/Desktop/EideticView
+eidetic start --source ~/Documents/MyData --mountpoint ~/Desktop/EideticView
 ```
 
-Now, open `~/Desktop/EideticView` in your file explorer. ✨
+### 2. Interaction
+Open `~/Desktop/EideticView` in your file explorer.
+- **AI Coding**: `cat ~/Desktop/EideticView/.context | pbcopy` (Mac) -> Paste into ChatGPT.
+- **Check Stats**: `cat ~/Desktop/EideticView/stats.md`
 
-### 2. Stop
-Press `Ctrl+C` in the terminal to unmount and stop Eidetic.
+### 3. Stop
+To stop the background process:
+
+```bash
+eidetic stop
+```
 
 ---
 
