@@ -1,68 +1,49 @@
 # Eidetic 🧠
 > *The Filesystem That Remembers.*
 
-Eidetic is an experimental **Intelligent Filesystem** built in Rust. It runs in userspace (FUSE) and enhances your local storage with superpowers like Time Travel, Content-Aware Organization, and Transparent Encryption.
+Eidetic enhances your local storage with **Time Travel**, **Privacy Vaults**, and **Magic Views**. It runs quietly in the background, giving your files superpowers.
 
-## 📂 Project Structure
-This is a monorepo containing:
-- **`eidetic/`**: The core Rust FUSE filesystem.
-- **`backend/`**: A Cloudflare Worker for backend services (licensing, sync, etc.).
 
-## 🚀 Key Features
+## ✨ Features
+- **⏳ Time Travel**: Instant snapshots of every change. Undo anything.
+- **🛡️ The Vault**: Drop files in `/vault` to transparently encrypt them on disk.
+- **📊 Live Stats**: Read `stats.md` in your root for real-time filesystem usage.
+- **🪄 Magic Views**: 
+    - Auto-convert images (Save `.png`, read `.jpg`).
+    - Web Links (`.url` files become the actual webpage).
+    - Code Context Bundles for AI.
 
-### 1. ⏳ Time Travel
-Never overwrite a file again. Eidetic snapshots every change instantly.
-- **How**: Check the hidden `.file.history` folder (or virtual view) to see previous versions.
-- **Tech**: Copy-On-Write logic backed by SQLite metadata.
+## 📦 Installation
 
-### 2. 🛡️ The Vault
-Professional-grade privacy for specific folders.
-- **How**: Any file in `/vault` is encrypted on-disk.
-- **Effect**: It looks like garbage in the source folder, but perfect in the Eidetic mount.
+To install Eidetic globally on your system:
 
-### 3. 🪄 Magic Views & Connected Files
-- **Auto-Convert**: Transparently read `.png` files as `.jpg`. Transformations happen on the fly.
-- **Web Links**: `.url` files that behave like the internet. Reading them fetches the live website HTML.
-- **Context Bundler**: Coding with AI? `cat src/.context` to get a perfect Markdown bundle of your project for prompt engineering.
-
-### 4. 🧹 Auto-Organizer
-The filesystem watches what you write.
-- Saves an "Invoice"? It moves to `/Finance`.
-- Detects code? It tags it `#code` for easy virtual searching.
-
-## 🛠️ Installation & Usage
-
-### Prerequisites
-- **Rust/Cargo**: `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
-- **FUSE**:
-    - macOS: `fuse-t` or `macFUSE`
-    - Linux: `libfuse-dev`
-    - Windows: `WinFSP` (Experimental)
-- **Node.js & npm** (for Backend)
-
-### Running Core (Filesystem)
 ```bash
-cd eidetic
+# Install via Cargo (Rust Package Manager)
+cargo install --path ./eidetic
+```
+*Note: Pre-built installers for macOS/Windows coming soon.*
 
-# 1. Create a source directory (where data effectively lives)
-mkdir source_data
+## 🚀 Usage
 
-# 2. Create a mount point (where you see the Magic)
-mkdir mount_point
+Once installed, you can use `eidetic` from any terminal, anywhere.
 
-# 3. Ignite Eidetic
-cargo run -- --source ./source_data --mountpoint ./mount_point
+### 1. Start the Magic
+You need two folders: one where your actual data lives ("Source") and one where you want to see the magic ("Mount").
+
+```bash
+# Syntax: eidetic mount --source <DATA_PATH> --mountpoint <VIEW_PATH>
+
+eidetic mount --source ~/Documents/MyData --mountpoint ~/Desktop/EideticView
 ```
 
-### Running Backend (Worker)
-```bash
-cd backend
-npm install
-npm run dev
-```
+Now, open `~/Desktop/EideticView` in your file explorer. ✨
 
-## 🏗️ Architecture
-Eidetic uses `fuser` for low-level filesystem operations and `rusqlite` for high-speed metadata tracking. It employs a background worker thread used to perform CPU-intensive tasks (AI tagging, OCR, Compression) so your filesystem never hangs.
+### 2. Stop
+Press `Ctrl+C` in the terminal to unmount and stop Eidetic.
 
-## 📜 License
-MIT License. Built for the community.
+---
+
+## 👨‍💻 For Developers
+If you are contributing to Eidetic using the monorepo:
+- **Core**: Located in `eidetic/`. Run with `cargo run`.
+- **Backend**: Located in `backend/`. Cloudflare Worker for sync/licensing.

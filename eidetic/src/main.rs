@@ -1,4 +1,4 @@
-use clap::Parser;
+use clap::{Parser, Subcommand};
 use fuser::MountOption;
 use std::path::PathBuf;
 use anyhow::{Context, Result};
@@ -8,22 +8,31 @@ mod fs;
 mod db;
 mod model;
 mod cipher;
-mod license; // [NEW]
+mod license;
 use fs::EideticFS;
 
 mod worker;
 
 
 #[derive(Parser, Debug)]
-#[command(version, about, long_about = None)]
-struct Args {
-    /// Path to the source directory to mirror
-    #[arg(short, long)]
-    source: PathBuf,
+#[command(name = "eidetic", version, about, long_about = None)]
+struct Cli {
+    #[command(subcommand)]
+    command: Commands,
+}
 
-    /// Path to the mount point
-    #[arg(short, long)]
-    mountpoint: PathBuf,
+#[derive(Subcommand, Debug)]
+enum Commands {
+    /// Mount the Eidetic filesystem (default)
+    Mount {
+        /// Path to the source directory to mirror
+        #[arg(short, long, default_value = "./source_data")]
+        source: PathBuf,
+
+        /// Path to the mount point
+        #[arg(short, long, default_value = "./mount_point")]
+        mountpoint: PathBuf,
+    },
 }
 
 fn main() -> Result<()> {
@@ -55,41 +64,45 @@ fn main() -> Result<()> {
         }
     }
     
-    let args = Args::parse();
+    let cli = Cli::parse();
 
-    let source = args.source;
-    let mountpoint = args.mountpoint;
+    match cli.command {
+        Commands::Mount { source, mountpoint } => {
+            // Ensure source exists
+            if !source.exists() {
+                std::fs::create_dir_all(&source).context("Failed to create source directory")?;
+            }
+            
+            // Ensure mountpoint exists (fuser needs it)
+            if !mountpoint.exists() {
+                std::fs::create_dir_all(&mountpoint).context("Failed to create mountpoint")?;
+            }
 
-    // Ensure source exists
-    if !source.exists() {
-        std::fs::create_dir_all(&source).context("Failed to create source directory")?;
+            println!("Starting EideticFS...");
+            println!("  Source: {:?}", source);
+            println!("  Mount:  {:?}", mountpoint);
+            println!("\n  (Press Ctrl+C to unmount)");
+
+
+            let uid = unsafe { libc::getuid() };
+            let gid = unsafe { libc::getgid() };
+            
+            // Start Worker
+            let (tx, rx) = std::sync::mpsc::channel();
+            let db_path = source.join(".eidetic.db");
+            worker::Worker::new(rx, db_path).start();
+            
+            let fs = EideticFS::new(source, uid, gid, tx);
+            
+            let options = vec![
+                MountOption::RW,
+                MountOption::FSName("eidetic".to_string()),
+                MountOption::AutoUnmount,
+            ];
+
+            fuser::mount2(fs, mountpoint, &options).context("Failed to mount filesystem")?;
+        }
     }
-    
-    // Ensure mountpoint exists (fuser needs it)
-    if !mountpoint.exists() {
-        std::fs::create_dir_all(&mountpoint).context("Failed to create mountpoint")?;
-    }
-
-    println!("Starting EideticFS...");
-
-
-    let uid = unsafe { libc::getuid() };
-    let gid = unsafe { libc::getgid() };
-    
-    // Start Worker
-    let (tx, rx) = std::sync::mpsc::channel();
-    let db_path = source.join(".eidetic.db");
-    worker::Worker::new(rx, db_path).start();
-    
-    let fs = EideticFS::new(source, uid, gid, tx);
-    
-    let options = vec![
-        MountOption::RW,
-        MountOption::FSName("eidetic".to_string()),
-        MountOption::AutoUnmount,
-    ];
-
-    fuser::mount2(fs, mountpoint, &options).context("Failed to mount filesystem")?;
 
     Ok(())
 }
