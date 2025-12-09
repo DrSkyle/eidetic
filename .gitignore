@@ -1,0 +1,17 @@
+# System files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Node.js
+node_modules/
+npm-debug.log
+.env
+
+# Rust
+target/
+**/*.rs.bk
+
+# Wrangler
+.wrangler/

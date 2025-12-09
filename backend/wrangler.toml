@@ -1,0 +1,11 @@
+name = "eidetic-license"
+main = "worker.js"
+compatibility_date = "2023-10-02"
+
+# Bind a KV Namespace for storing keys
+# Run `npx wrangler kv:namespace create LICENSES` to get the ID and replace it below if deploying seriously.
+# For now we use a preview namespace logic or expect user to fill this.
+[[kv_namespaces]]
+binding = "LICENSES"
+id = "e0f419014671448f929ca73d78a62349"
+preview_id = "e0f419014671448f929ca73d78a62349"
