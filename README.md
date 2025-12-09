@@ -5,6 +5,11 @@ Eidetic is an experimental **Intelligent Filesystem** built in Rust. It runs in 
 
 ![Eidetic Demo](https://via.placeholder.com/800x400?text=Imagine+Cool+Demo+GIF+Here)
 
+## 📂 Project Structure
+This is a monorepo containing:
+- **`eidetic/`**: The core Rust FUSE filesystem.
+- **`backend/`**: A Cloudflare Worker for backend services (licensing, sync, etc.).
+
 ## 🚀 Key Features
 
 ### 1. ⏳ Time Travel
@@ -35,22 +40,31 @@ The filesystem watches what you write.
     - macOS: `fuse-t` or `macFUSE`
     - Linux: `libfuse-dev`
     - Windows: `WinFSP` (Experimental)
+- **Node.js & npm** (for Backend)
 
-### Running
+### Running Core (Filesystem)
 ```bash
+cd eidetic
+
 # 1. Create a source directory (where data effectively lives)
-element mkdir source_data
+mkdir source_data
 
 # 2. Create a mount point (where you see the Magic)
-element mkdir mount_point
+mkdir mount_point
 
 # 3. Ignite Eidetic
-# Note: Use the flags --source and --mountpoint
 cargo run -- --source ./source_data --mountpoint ./mount_point
 ```
 
+### Running Backend (Worker)
+```bash
+cd backend
+npm install
+npm run dev
+```
+
 ## 🏗️ Architecture
-Eidetic uses `fuser` for low-level filesystem operations and `rusqlite` for high-speed metadata tracking. It employs a background worker thread (`worker.rs`) to perform CPU-intensive tasks (AI tagging, OCR, Compression) so your filesystem never hangs.
+Eidetic uses `fuser` for low-level filesystem operations and `rusqlite` for high-speed metadata tracking. It employs a background worker thread used to perform CPU-intensive tasks (AI tagging, OCR, Compression) so your filesystem never hangs.
 
 ## 📜 License
 MIT License. Built for the community.
